@@ -1,0 +1,156 @@
+  <head>
+    <link
+      href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        font-family: system-ui;
+      }
+
+      #message-change {
+        padding: 15px;
+        background-color: #ededed;
+        color: black;
+        font-size: 16px;
+        border: 1px solid #888;
+        font-size: 24px;
+        text-align: center;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .example {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      code {
+        font-size: 1.5em !important;
+      }
+
+      .navigation {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+      }
+
+      .changed {
+        padding: 5px;
+        background-color: rgba(0, 255, 0, 0.4);
+        color: #00cc00;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Mutation observer</h1>
+    <div id="message-change" class="hidden"></div>
+    <div>
+      <h2>Children</h2>
+      <div class="example">
+        <div example>
+          <div id="watched-element">
+            Children change example
+            <ul id="parent">
+              <li>One</li>
+              <li>Two</li>
+              <li>Three </li>
+              <ul id="child" >
+                <li>One</li>
+                <li>Two</li>
+                <li>Three </li>
+              </ul>
+
+            </ul>
+          </div>
+        </div>
+        <button id="change-button">Add or remove random item</button>
+        <pre>
+          <code class="language-js">
+            // Get the element to be observed
+            const watchedElement = document.getElementById("watched-element");
+
+            // Create the callback function
+            const monitorCallback = function (mutationList, observer) {
+              // Do-stuff
+              // Mutationlist is an array of MutationRecords, each MutationRecord contains the following relevant attributes:
+
+              // type
+              // addedNodes
+              // removedNodes
+              // target
+            };
+
+            // Instantiate the MutationObserver passing the callback function
+            const observer = new MutationObserver(monitorCallback);
+
+            // Watch for characterData changes in the element and its subtrees, this will make sure inner text node changes are also taken into account. 
+            const config = { childList: true, subtree: true };
+
+            // Start observing the element with the defined config
+            observer.observe(watchedElement, config);
+
+
+            // When you're done, call disconnect
+            observer.disconnect()
+          </code>
+        </pre>
+      </div>
+    </div>
+    <div class="navigation">
+      <a href="./use-case.html">Next</a>
+    </div>
+
+    <script>
+      //  Simple attributes changes
+      const watchedElement = document.getElementById("watched-element");
+      const changeButton = document.getElementById("change-button");
+      changeButton.addEventListener('click', function() {
+        const listId = ['parent', 'child'][Math.floor(Math.random() * 2)];
+        const list = document.getElementById(listId)
+        if (Math.floor(Math.random() * 2) == 0) {
+          const newElement = document.createElement('li');
+          newElement.innerHTML = ['One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten'][Math.floor(Math.random() * 10)];
+          list.appendChild(newElement)
+        } else { 
+          const elementToRemove = list.children[Math.floor(Math.random() * list.children.length)]
+          elementToRemove.remove();
+        }
+      })
+
+
+      const messageChange = document.getElementById("message-change");
+
+      const monitorCallback = function (mutationList, observer) {
+        for (const mutation of mutationList) {
+          const { target, type, addedNodes, removedNodes } = mutation;
+          let message = '';
+          if (addedNodes && addedNodes.length) {
+            message = `Added element <em>${addedNodes[0].innerHTML}</em> to <b>${target.id}</b> `;
+          } else {
+            message = `Removed element <em>${removedNodes[0].innerHTML}</em> from <b>${target.id}</b> `;
+          }
+          messageChange.attributes.class.value = "";
+          messageChange.innerHTML = message;
+        }
+      };
+
+      const observer = new MutationObserver(monitorCallback);
+
+      const config = {
+        subtree: true,
+        childList: true
+      };
+      observer.observe(watchedElement, config);
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+  </body>
+</html>

@@ -1,0 +1,97 @@
+<html>
+  <head>
+    <link
+      href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        font-family: system-ui;
+      }
+
+      #message-change {
+        padding: 15px;
+        background-color: #ededed;
+        color: black;
+        font-size: 16px;
+        border: 1px solid #888;
+        font-size: 24px;
+        text-align: center;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .example {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      code {
+        font-size: 1.5em !important;
+      }
+
+      .navigation {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+      }
+
+      #watched-element {
+        min-height: 150px;
+        min-width: 250px;
+        border: 1px solid #cccccc;
+        padding: 15px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Mutation observer</h1>
+    <div>
+      <h2>Use Case</h2>
+      <pre>
+          <code class="language-js">
+            import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
+
+            const Component = ({ children, callback }) => {
+              const menuRef = useRef();
+              const [obs, setObs] = useState(null);
+              if (!obs) {
+                setObs(
+                  new MutationObserver((mutationList, mutationObserver) => {
+                    callback();
+                    mutationObserver.disconnect();
+                  })
+                );
+              }
+
+              useLayoutEffect(() => {
+                if (!menuRef.current) return;
+                if (!obs) return;
+
+                obs.observe(menuRef.current, {
+                  attributes: true,
+                  subtree: true,
+                  childList: true,
+                });
+
+                return () => obs.disconnect();
+              }, [obs]);
+
+              return <WrappedComponent ref={menuRef}>{children}</Wrappedcomponent>;
+            };
+
+            export default Component;
+          </code>
+        </pre>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+  </body>
+</html>

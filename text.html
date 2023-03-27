@@ -1,0 +1,129 @@
+<html>
+  <head>
+    <link
+      href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        font-family: system-ui;
+      }
+
+      #message-change {
+        padding: 15px;
+        background-color: #ededed;
+        color: black;
+        font-size: 16px;
+        border: 1px solid #888;
+        font-size: 24px;
+        text-align: center;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .example {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      code {
+        font-size: 1.5em !important;
+      }
+
+      .navigation {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+      }
+
+      #watched-element {
+        min-height: 150px;
+        min-width: 250px;
+        border: 1px solid #cccccc;
+        padding: 15px;
+      }
+
+      .changed {
+        padding: 5px;
+        background-color: rgba(0, 255, 0, 0.4);
+        color: #00cc00;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Mutation observer</h1>
+    <div id="message-change" class="hidden"></div>
+    <div>
+      <h2>Text Node</h2>
+      <div class="example">
+        <div example>
+          <div id="watched-element" contenteditable="true">
+            Text change example
+          </div>
+        </div>
+        <pre>
+          <code class="language-js">
+            // Get the element to be observed
+            const watchedElement = document.getElementById("watched-element");
+
+            // Create the callback function
+            const monitorCallback = function (mutationList, observer) {
+              // Do-stuff
+              // Mutationlist is an array of MutationRecords, each MutationRecord contains the following relevant attributes:
+
+              // type
+              // oldValue
+              // target
+            };
+
+            // Instantiate the MutationObserver passing the callback function
+            const observer = new MutationObserver(monitorCallback);
+
+            // Watch for characterData changes in the element and its subtrees, this will make sure inner text node changes are also taken into account. 
+            const config = { characterData: true, characterDataOldValue: true, subtree: true };
+
+            // Start observing the element with the defined config
+            observer.observe(watchedElement, config);
+          </code>
+        </pre>
+      </div>
+    </div>
+    <div class="navigation">
+      <a href="./child-elements.html">Next</a>
+    </div>
+
+    <script>
+      //  Simple attributes changes
+      const watchedElement = document.getElementById("watched-element");
+
+      const messageChange = document.getElementById("message-change");
+
+      const monitorCallback = function (mutationList, observer) {
+        for (const mutation of mutationList) {
+          const { target, type, oldValue } = mutation;
+          const message = `Changed text node from <b>${oldValue}</b> to <b>${target.data}</b><br/>`;
+          messageChange.attributes.class.value = "";
+          messageChange.innerHTML = message;
+        }
+      };
+
+      const observer = new MutationObserver(monitorCallback);
+
+      const config = {
+        subtree: true,
+        characterData: true,
+        characterDataOldValue: true,
+      };
+      observer.observe(watchedElement, config);
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+  </body>
+</html>
